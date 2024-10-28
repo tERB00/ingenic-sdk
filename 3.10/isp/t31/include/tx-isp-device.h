@@ -83,6 +83,9 @@ struct tx_isp_subdev_pad {
 
 struct tx_isp_dbg_register {
 	char *name;
+#ifdef SENSOR_DOUBLE
+	int sensor_id;
+#endif
 	unsigned int size;
 	unsigned long long reg;
 	unsigned long long val;
@@ -99,6 +102,21 @@ struct tx_isp_chip_ident {
 	char *revision;
 	unsigned int ident;
 };
+
+#ifdef SENSOR_DOUBLE
+enum tx_isp_sensor_fsync_place {
+	TX_ISP_SENSOR_FSYNC_PLACE_INIT_BEFORE = 0,
+	TX_ISP_SENSOR_FSYNC_PLACE_INIT_AFTER,
+	TX_ISP_SENSOR_FSYNC_PLACE_STREAMON_BEFORE,
+	TX_ISP_SENSOR_FSYNC_PLACE_STREAMON_AFTER,
+};
+
+struct tx_isp_sensor_fsync {
+	enum tx_isp_sensor_fsync_place place;   /**< The location where the fsync function is called. (Read only) */
+
+	int call_index;		/**< The current call index. (If the value is 0, it is initialized and data needs to be set) (Read only) */
+};
+#endif
 
 struct tx_isp_subdev_core_ops {
 	int (*g_chip_ident)(struct tx_isp_subdev *sd, struct tx_isp_chip_ident *chip);
@@ -124,6 +142,9 @@ struct tx_isp_subdev_sensor_ops {
 	int (*release_all_sensor)(struct tx_isp_subdev *sd);
 	int (*sync_sensor_attr)(struct tx_isp_subdev *sd, void *arg);
 	int (*ioctl)(struct tx_isp_subdev *sd, unsigned int cmd, void *arg);
+#ifdef SENSOR_DOUBLE
+	int (*fsync)(struct tx_isp_subdev *sd, struct tx_isp_sensor_fsync *fsync);
+#endif
 };
 
 struct tx_isp_subdev_pad_ops {
@@ -230,7 +251,12 @@ struct tx_isp_device {
 	spinlock_t slock;
 	int refcnt;
 
+#ifdef SENSOR_DOUBLE
+	int active_link[4];
+#else
 	int active_link;
+#endif
+
 	/* debug parameters */
 	struct proc_dir_entry *proc;
 };

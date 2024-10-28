@@ -19,6 +19,10 @@
 #include "tx-isp-debug.h"
 
 #define ISP_SUCCESS 0
+#ifdef SENSOR_DOUBLE
+#define SENSORNUM  3
+#endif
+
 
 /* T31 */
 #define TX_ISP_INPUT_PORT_MAX_WIDTH		4096
@@ -370,6 +374,41 @@ typedef struct tx_isp_sensor_ctrl{
 	unsigned int (*alloc_integration_time)(unsigned int it, unsigned char shift, unsigned int *sensor_it);
 	unsigned int (*alloc_integration_time_short)(unsigned int it_short, unsigned char shift, unsigned int *sensor_it_short);
 } TX_ISP_SENSOR_CTRL;
+
+#ifdef SENSOR_DOUBLE
+enum tx_isp_sensor_fsync_mode {
+	TX_ISP_SENSOR_FSYNC_MODE_CLOSE = 0,
+	TX_ISP_SENSOR_FSYNC_MODE_MS_SINGLE,
+	TX_ISP_SENSOR_FSYNC_MODE_MS_REALTIME,
+	TX_ISP_SENSOR_FSYNC_MODE_MS_REALTIME_MISPLACE,
+	TX_ISP_SENSOR_FSYNC_MODE_SS_SINGLE_PWM,
+	TX_ISP_SENSOR_FSYNC_MODE_SS_SINGLE_PWM_MISPLACE,
+	TX_ISP_SENSOR_FSYNC_MODE_SS_DUAL_PWM,
+	TX_ISP_SENSOR_FSYNC_MODE_SS_DUAL_PWM_MISPLACE,
+};
+
+struct tx_isp_sensor_fsync_pwm {
+	unsigned int mpwmx;     /**< master pwmx */
+	unsigned int spwmx;     /**< slave pwmx */
+	unsigned int freq;      /**< frequency (unit:Hz) */
+	unsigned int dratio;    /**< duty ratio (range:[0, 100]) */
+	unsigned int polar;     /**< polarity (range:[0, 1])*/
+	unsigned int offset;    /**< Phase offset in dual pwm mode */
+	void *priv;
+};
+
+struct tx_isp_sensor_fsync_attr {
+	enum tx_isp_sensor_fsync_mode mode;
+
+	int call_times;         /**< The number of function loop calls. */
+	unsigned int sdelay;    /**< Switch delay time. (unit:ns) */
+
+	struct tx_isp_sensor_fsync_pwm pwm;
+
+	void *priv;
+};
+#endif
+
 
 #define TX_ISP_GAIN_FIXED_POINT 16
 #define LOG2_GAIN_SHIFT 16
