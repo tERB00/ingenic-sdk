@@ -12,6 +12,12 @@ static int isp_clk = 100000000;
 module_param(isp_clk, int, S_IRUGO);
 MODULE_PARM_DESC(isp_clk, "isp clock freq");
 
+#ifdef SENSOR_DOUBLE
+static int mipi_switch_gpio = GPIO_PA(7);
+module_param(mipi_switch_gpio, int , S_IRUGO);
+MODULE_PARM_DESC(mipi_switch_gpio, "select mipi switch gpio");
+#endif
+
 extern int isp_ch0_pre_dequeue_time;
 module_param(isp_ch0_pre_dequeue_time, int, S_IRUGO);
 MODULE_PARM_DESC(isp_ch0_pre_dequeue_time, "isp pre dequeue time, unit ms");
