@@ -435,7 +435,7 @@ static int sensor_write_array(struct tx_isp_subdev *sd, struct regval_list *vals
 	int ret;
 	while (vals->reg_num != SENSOR_REG_END) {
 		ret = sensor_write(sd, vals->reg_num, vals->value);
-		printk(" 0x%x,0x%x\n", vals->reg_num, vals->value);
+		/* printk(" 0x%x,0x%x\n", vals->reg_num, vals->value); */
 		if (ret < 0)
 			return ret;
 
@@ -685,7 +685,7 @@ static int sensor_g_chip_ident(struct tx_isp_subdev *sd,
 			private_gpio_direction_output(reset_gpio, 1);
 			private_msleep(20);
 		} else {
-			ISP_ERROR("gpio requrest fail %d\n",reset_gpio);
+			ISP_ERROR("gpio request fail %d\n",reset_gpio);
 		}
 	}
 	if (pwdn_gpio != -1) {
@@ -696,7 +696,7 @@ static int sensor_g_chip_ident(struct tx_isp_subdev *sd,
 			private_gpio_direction_output(pwdn_gpio, 1);
 			private_msleep(10);
 		} else {
-			ISP_ERROR("gpio requrest fail %d\n",pwdn_gpio);
+			ISP_ERROR("gpio request fail %d\n",pwdn_gpio);
 		}
 	}
 	ret = sensor_detect(sd, &ident);
